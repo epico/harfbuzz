@@ -47,7 +47,8 @@ struct hb_kern_machine_t
   void kern (hb_font_t   *font,
 	     hb_buffer_t *buffer,
 	     hb_mask_t    kern_mask,
-	     bool         scale = true) const
+	     bool         scale = true,
+	     bool         grid_fit = true) const
   {
     OT::hb_ot_apply_context_t c (1, font, buffer);
     c.set_lookup_mask (kern_mask);
@@ -79,6 +80,22 @@ struct hb_kern_machine_t
 
       hb_position_t kern = driver.get_kerning (info[i].codepoint,
 					       info[j].codepoint);
+
+      if (grid_fit)
+      {
+        unsigned int x_ppem = 0, y_ppem = 0;
+        hb_font_get_ppem (font, &x_ppem, &y_ppem);
+        if (horizontal)
+        {
+          if (0 < x_ppem && x_ppem < 25)
+            kern = kern * x_ppem / 25;
+        }
+        else
+        {
+          if (0 < y_ppem && y_ppem < 25)
+            kern = kern * y_ppem / 25;
+        }
+      }
 
 
       if (likely (!kern))
