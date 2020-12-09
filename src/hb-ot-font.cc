@@ -148,7 +148,8 @@ hb_ot_get_glyph_v_origin (hb_font_t *font,
 {
   const hb_ot_face_t *ot_face = (const hb_ot_face_t *) font_data;
 
-  *x = font->get_glyph_h_advance (glyph) / 2;
+  /* For vertical layout, the origin point is the top left corner. */
+  *x = 0;
 
 #ifndef HB_NO_OT_FONT_CFF
   const OT::VORG &VORG = *ot_face->VORG;
